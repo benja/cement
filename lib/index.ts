@@ -1,59 +1,43 @@
-import { ConfigInterface } from './interfaces/config.interface';
+import get from 'lodash.get';
+import set from 'lodash.set';
+
+import { IConfig, IAnyDictionary } from './types';
+import { NoRootException, UndefinedDataReferencedException } from './exceptions';
 
 // Heart of Cement
-export default class Cement {
-    public data: object;
-    public methods: object;
-    public element: string;
+export default class Cement<Data extends IAnyDictionary = {}, Methods extends IAnyDictionary = {}> {
+    public data: Data;
+    public methods: Methods;
+    public config: IConfig<Data, Methods>;
 
-    public initialRoot: any;
-
-    constructor(private config: ConfigInterface) {
-        this.data = <object> config['data'];
-        this.methods = <object> config['methods'];
-        this.element = <string> config['el'];
-        this.initialRoot = document.querySelector(this.element);
-        
+    constructor(config: IConfig<Data, Methods>) {
+        this.config = config;
+        this.data = config.data;
+        this.methods = config.methods;
         this.makeReactive();
         this.renderData();
-
-        delete this.config;
     }
 
-    renderData(): void {
-        let root = document.querySelector(this.element);
-        let children = [...root.childNodes];
+    private get $root() {
+        const root = typeof this.config.el === 'string' ? document.querySelector<HTMLElement>(this.config.el) : this.config.el;
+        if (!root) throw new NoRootException();
+        return root;
+    }
 
-        children.forEach((e: any) => {
-            // if child is an element
-            if(e.nodeType === 1) {
-                
-                let dataWrapper = e.innerHTML.match('{{(.*)}}')[0]; 
-                let dataName = e.innerHTML.match('{{(.*)}}')[1].trim();
-                let value = this.data[dataName]; 
+    renderData() {
+        const children = [...this.$root.children];
 
-                if(dataName.includes('.')) {
+        const isHTMLElement = (e: Element): e is HTMLElement => (e instanceof HTMLElement);
 
-                    // getDescendantProp from https://gist.github.com/jasonrhodes/2321581#gistcomment-1813156
-                    const getDescendantProp = (obj, path) => (
-                        path.split('.').reduce((acc, part) => acc && acc[part], obj)
-                    );
-                    let deep = getDescendantProp(this.data, dataName);
-
-                    if(deep !== undefined) {
-                        e.innerHTML = e.innerHTML.replace(dataWrapper, deep);
-                    }  else {
-                        console.error(`${dataName} not found`);
-                    }
-                } else {
-                    if(value !== undefined) {
-                        e.innerHTML = e.innerHTML.replace(dataWrapper, value);
-                    } else {
-                        console.error(`${dataName} not found`);
-                    }
-
+        children.filter(isHTMLElement).forEach((e) => {
+            const match = e.innerHTML.match(/{{(.*?)}}/);
+            if (match && match.length > 1) {
+                const dataName = match[1].trim();
+                if (!this.data.hasOwnProperty(dataName)) throw new UndefinedDataReferencedException();
+                const value = get(this.data, dataName);
+                if (value !== undefined && value !== null) {
+                    e.innerHTML = e.innerHTML.replace(match[0], value);
                 }
-
             }
         });
         
@@ -61,16 +45,13 @@ export default class Cement {
 
     makeReactive() {
         for(let property in this.data) {
-            let value = this.data[property];
-            let self  = this;
-
             Object.defineProperty(this.data, property, {
-                get: function cementGetter() {
-                    return value;
+                get: () => {
+                    return get(this.data, property);
                 },
-                set: function cementSetter(newValue) {
-                    self.renderData(); // doesn't work yet
-                    return value = newValue;
+                set: (newValue) => {
+                    set(this.data, property, newValue);
+                    this.renderData();
                 }
             })
         
