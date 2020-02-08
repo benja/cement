@@ -44,7 +44,6 @@ export default class Cement<
             if (match && match.length > 1) {
                 const dataName = match[1].trim();
                 const value = get(this.data, dataName);
-                console.log(value, dataName, this.data.users);
                 if (value === undefined) throw new UndefinedDataReferencedException();
                 e.innerHTML = e.innerHTML.replace(match[0], value);
             }
