@@ -1,0 +1,28 @@
+{
+  "name": "cement-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --mode development"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^1.19.1",
+    "ts-loader": "^6.2.1",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.2"
+  },
+  "dependencies": {
+    "react": "16.12.0",
+    "cement": "latest"
+  }
+}

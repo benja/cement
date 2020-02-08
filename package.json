@@ -2,7 +2,7 @@
   "name": "cement",
   "version": "1.0.0",
   "description": "A logic based reactive JavaScript library that binds your application together..",
-  "main": "index.ts",
+  "main": "/dist",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +13,9 @@
     "library",
     "learning"
   ],
+  "type": "module",
   "homepage": "https://github.com/benjaminakar/cement",
   "author": "Benjamin Akar",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {}
 }

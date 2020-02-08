@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "module": "ES6",
+      "jsx": "preserve",
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "target": "es2017",
+      "declaration": true,
+      "allowJs": true,
+      "outDir": "./dist"
+    },
+    "include": ["./lib/**/*"]
+  }
