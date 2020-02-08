@@ -1,16 +1,29 @@
 import Cement from 'cement';
 
-// Instanciate project
-const cement = new Cement({
+interface IUser {
+    firstName: string;
+    lastName: string;
+    biography: string;
+}
+
+interface IData {
+    user: IUser;
+}
+
+interface IMethods {
+    fullName: () => string;
+}
+
+const cement = new Cement<IData, IMethods>({
     el: '#app',
     methods: {
-        totalUsers: function () {
-            return cement.data.builders.length;
-        }
+        fullName() {
+            return `${this.user.firstName} ${this.user.lastName}`;
+        },
     },
     data: {
         user: {
-        	firstName: 'Benjamin',
+            firstName: 'Benjamin',
             lastName: 'Akar',
             biography: 'I code things'
         },
@@ -18,5 +31,3 @@ const cement = new Cement({
 });
 
 globalThis['cement'] = cement;
-
-console.log(cement.data.user.fullName());

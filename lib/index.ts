@@ -4,18 +4,30 @@ import set from 'lodash.set';
 import { IConfig, IAnyDictionary } from './types';
 import { NoRootException, UndefinedDataReferencedException } from './exceptions';
 
-// Heart of Cement
-export default class Cement<Data extends IAnyDictionary = {}, Methods extends IAnyDictionary = {}> {
+export default class Cement<
+    Data extends IAnyDictionary = {},
+    Methods extends IAnyDictionary = {}
+> {
+    private _data: Data;
     public data: Data;
     public methods: Methods;
-    public config: IConfig<Data, Methods>;
+    public config: IConfig<Data, Cement['methods']>;
 
     constructor(config: IConfig<Data, Methods>) {
         this.config = config;
-        this.data = config.data;
+        // this.data = config.data;
+        this.data = new Proxy<Data>(
+            { ...config.data },
+            {
+                set: (obj, prop: keyof Data, value) => {
+                    obj[prop] = value;
+                    this.render();
+                    return true;
+                }
+            },
+        );
         this.methods = config.methods;
-        this.makeReactive();
-        this.renderData();
+        this.render();
     }
 
     private get $root() {
@@ -24,37 +36,20 @@ export default class Cement<Data extends IAnyDictionary = {}, Methods extends IA
         return root;
     }
 
-    renderData() {
+    render() {
         const children = [...this.$root.children];
 
         const isHTMLElement = (e: Element): e is HTMLElement => (e instanceof HTMLElement);
-
         children.filter(isHTMLElement).forEach((e) => {
             const match = e.innerHTML.match(/{{(.*?)}}/);
             if (match && match.length > 1) {
                 const dataName = match[1].trim();
-                if (!this.data.hasOwnProperty(dataName)) throw new UndefinedDataReferencedException();
                 const value = get(this.data, dataName);
-                if (value !== undefined && value !== null) {
-                    e.innerHTML = e.innerHTML.replace(match[0], value);
-                }
+                console.log(value, dataName, this.data.users);
+                if (value === undefined) throw new UndefinedDataReferencedException();
+                e.innerHTML = e.innerHTML.replace(match[0], value);
             }
         });
         
-    }
-
-    makeReactive() {
-        for(let property in this.data) {
-            Object.defineProperty(this.data, property, {
-                get: () => {
-                    return get(this.data, property);
-                },
-                set: (newValue) => {
-                    set(this.data, property, newValue);
-                    this.renderData();
-                }
-            })
-        
-        }
     }
 }

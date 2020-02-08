@@ -1,3 +1,3 @@
-export interface IAnyDictionary {
-    [key: string]: any;
+export interface IAnyDictionary<V = any> {
+    [key: string]: V;
 }
