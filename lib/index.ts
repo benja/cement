@@ -15,7 +15,6 @@ export default class Cement<
 
     constructor(config: IConfig<Data, Methods>) {
         this.config = config;
-        // this.data = config.data;
         this.data = new Proxy<Data>(
             { ...config.data },
             {
