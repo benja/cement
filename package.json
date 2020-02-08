@@ -17,5 +17,12 @@
   "homepage": "https://github.com/benjaminakar/cement",
   "author": "Benjamin Akar",
   "license": "MIT",
-  "devDependencies": {}
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "rollup": "^1.31.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "typescript": "^3.7.5"
+  }
 }
