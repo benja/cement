@@ -4,26 +4,19 @@ import Cement from 'cement';
 const cement = new Cement({
     el: '#app',
     methods: {
-        builders: function () {
+        totalUsers: function () {
             return cement.data.builders.length;
         }
     },
     data: {
-        builders: [
-            {
-                name: 'Jeff',
-                age: 36
-            },
-            {
-                name: 'Kevin',
-                age: 26
-            },
-        ],
-        hello: 'World',
-        cement: {
-            message: 'A logic based reactive JavaScript library that binds your application together.',
+        user: {
+        	firstName: 'Benjamin',
+            lastName: 'Akar',
+            biography: 'I code things'
         },
     }
 });
 
 globalThis['cement'] = cement;
+
+console.log(cement.data.user.fullName());

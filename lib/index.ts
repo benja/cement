@@ -1,17 +1,23 @@
-// Cement's heart
+import { ConfigInterface } from './interfaces/config.interface';
+
+// Heart of Cement
 export default class Cement {
     public data: object;
     public methods: object;
     public element: string;
 
-    // Create Cemenet instance
-    constructor(public config: any) {
+    public initialRoot: any;
+
+    constructor(private config: ConfigInterface) {
         this.data = <object> config['data'];
         this.methods = <object> config['methods'];
         this.element = <string> config['el'];
-
+        this.initialRoot = document.querySelector(this.element);
+        
         this.makeReactive();
         this.renderData();
+
+        delete this.config;
     }
 
     renderData(): void {
@@ -32,10 +38,20 @@ export default class Cement {
                     const getDescendantProp = (obj, path) => (
                         path.split('.').reduce((acc, part) => acc && acc[part], obj)
                     );
+                    let deep = getDescendantProp(this.data, dataName);
 
-                    e.innerHTML = e.innerHTML.replace(dataWrapper, getDescendantProp(this.data, dataName));
+                    if(deep !== undefined) {
+                        e.innerHTML = e.innerHTML.replace(dataWrapper, deep);
+                    }  else {
+                        console.error(`${dataName} not found`);
+                    }
                 } else {
-                    e.innerHTML = e.innerHTML.replace(dataWrapper, value);
+                    if(value !== undefined) {
+                        e.innerHTML = e.innerHTML.replace(dataWrapper, value);
+                    } else {
+                        console.error(`${dataName} not found`);
+                    }
+
                 }
 
             }
@@ -44,15 +60,16 @@ export default class Cement {
     }
 
     makeReactive() {
-
         for(let property in this.data) {
             let value = this.data[property];
+            let self  = this;
 
             Object.defineProperty(this.data, property, {
                 get: function cementGetter() {
                     return value;
                 },
                 set: function cementSetter(newValue) {
+                    self.renderData(); // doesn't work yet
                     return value = newValue;
                 }
             })

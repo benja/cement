@@ -1,9 +1,11 @@
+import { ConfigInterface } from './interfaces/config.interface';
 export default class Cement {
-    config: any;
+    private config;
     data: object;
     methods: object;
     element: string;
-    constructor(config: any);
+    initialRoot: any;
+    constructor(config: ConfigInterface);
     renderData(): void;
     makeReactive(): void;
 }
