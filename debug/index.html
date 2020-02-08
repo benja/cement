@@ -15,10 +15,20 @@
         font-size: 15px;
         font-weight: bold;
       }
+
+      h5, p {
+        color: white;
+        font-size: 30px;
+      }
     </style>
   </head>
   <body>
     <h1>Cement.JS</h1>
+    
+    <div id="app">
+      <h5>Hello, {{ hello }}!</h5>
+      <p>{{ cement.message }}</p>
+    </div>
     <script src="app.js" type="text/javascript"></script>
   </body>
 </html>
