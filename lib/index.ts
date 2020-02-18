@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { ConfigInterface } from './interfaces/config.interface';
 
 // Heart of Cement
@@ -5,6 +6,39 @@ export default class Cement {
     public data: object;
     public methods: object;
     public element: string;
+=======
+import get from 'lodash.get';
+import set from 'lodash.set';
+
+import { IConfig, IAnyDictionary } from './types';
+import { NoRootException, UndefinedDataReferencedException } from './exceptions';
+
+export default class Cement<
+    Data extends IAnyDictionary = {},
+    Methods extends IAnyDictionary = {}
+> {
+    private _data: Data;
+    public data: Data;
+    public methods: Methods;
+    public config: IConfig<Data, Cement['methods']>;
+
+    constructor(config: IConfig<Data, Methods>) {
+        this.config = config;
+        this.data = new Proxy<Data>(
+            { ...config.data },
+            {
+                set: (obj, prop: keyof Data, value) => {
+                    obj[prop] = value;
+                    this.render();
+                    return true;
+                }
+            },
+        );
+        this.methods = config.methods;
+        this.render();
+        console.log();
+    }
+>>>>>>> Stashed changes
 
     public initialRoot: any;
 
